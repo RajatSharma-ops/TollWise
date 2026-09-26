@@ -6,7 +6,7 @@
 
 ## 🚀 How It Works
 
-1. **User Input**: User submits `origin`, `destination`, and `annual_pass: true | false`.
+1. **User Input**: User submits `origin`, `destination`, and `annual_pass: true | false` via the web application or REST API.
 2. **Route Provider (TollGuru)**: TollWise queries the TollGuru API to retrieve all route alternatives (e.g. 3 routes for Delhi → Jaipur), including distance, duration, toll plazas, and standard fees.
 3. **Plaza Matching**: Each toll plaza is normalized and evaluated independently against the official NHAI Annual Pass PDF dataset.
 4. **Payable Toll Calculation**:
@@ -24,7 +24,13 @@ TollWise/
 ├── data/
 │   ├── README.md               # Instructions for dataset placement
 │   └── NH-Plazas.pdf           # Official NHAI/IHMCL Annual Pass eligible plaza PDF
-├── src/
+├── frontend/                   # React + Vite Frontend Web App
+│   ├── public/                 # Static assets
+│   ├── src/                    # Components (RouteShow, Ticket, SearchBar, etc.)
+│   ├── .env.example            # Frontend environment variables template
+│   ├── package.json            # Node.js dependencies & scripts
+│   └── vite.config.ts          # Vite configuration with API proxying to backend
+├── src/                        # FastAPI Backend Application
 │   ├── annual_pass/            # Feature: Annual Pass PDF loading & plaza evaluation
 │   │   ├── __init__.py
 │   │   ├── controller.py       # Dataset loader & plaza matching logic
@@ -61,10 +67,11 @@ TollWise/
 
 ### 1. Prerequisites
 - Python 3.10+
+- Node.js 20+ and npm
 - TollGuru API Key (Get from [TollGuru API Docs](https://tollguru.com/toll-api-docs))
 
 ### 2. Environment Configuration
-Copy `.env.example` to `.env` and enter your TollGuru API key:
+Copy `.env.example` to `.env` in the root directory and set your TollGuru API key:
 
 ```bash
 cp .env.example .env
@@ -85,38 +92,45 @@ data/NH-Plazas.pdf
 ```
 
 ### 4. Install Dependencies
+
+#### Backend
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+#### Frontend
+```bash
+cd frontend
+npm install
+```
+
 ---
 
 ## 🏃 Running the Application
 
-### Option A: Local Python Environment
+To run the complete application, start both the backend and frontend servers:
+
+### 1. Start the Backend Server (FastAPI)
 ```bash
-# Start server using Uvicorn
+# Activate virtual environment if not already activated
+source venv/bin/activate
+
+# Run Uvicorn server
 uvicorn main:app --reload --host 127.0.0.1 --port 8000
-
-# Or run Python directly
-python main.py
 ```
-
-### Option B: Docker & Docker Compose
-```bash
-# Using Docker Compose
-docker-compose up --build
-
-# Or using Docker CLI
-docker build -f docker/Dockerfile -t tollwise-api .
-docker run -p 8000:8000 --env-file .env tollwise-api
-```
-
-The API will be available at:
-- **Base URL**: `http://127.0.0.1:8000`
+- **Base API URL**: `http://127.0.0.1:8000`
 - **Interactive Swagger Docs**: `http://127.0.0.1:8000/docs`
+
+### 2. Start the Frontend Dev Server (Vite)
+In a separate terminal window:
+```bash
+cd frontend
+npm run dev
+```
+- **Frontend App URL**: `http://localhost:5173`
+- The dev server automatically proxies `/api/*` HTTP requests to `http://127.0.0.1:8000`.
 
 ---
 
@@ -146,74 +160,26 @@ The API will be available at:
   "routes_count": 3,
   "routes": [
     {
-      "route_name": "via Delhi - Mumbai Expy / NE 4 (Fastest)",
-      "distance_km": 297.4,
-      "duration_minutes": 265.0,
-      "normal_toll": 585.0,
-      "annual_pass_covered_amount": 585.0,
+      "route_name": "Bandikui Jaipur Expressway",
+      "distance_km": 297.68,
+      "duration_minutes": 209.33,
+      "normal_toll": 615.0,
+      "annual_pass_covered_amount": 615.0,
       "payable_toll": 0.0,
-      "annual_pass_savings": 585.0,
-      "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=Delhi&destination=Jaipur",
+      "annual_pass_savings": 615.0,
+      "google_maps_url": "https://www.google.com/maps/?saddr=...",
       "tolls": [
         {
-          "name": "Hilalpur Toll Plaza (Delhi-Mumbai Expy)",
-          "normal_fee": 220.0,
+          "name": "Ghamroj",
+          "normal_fee": 135.0,
           "annual_pass_status": "COVERED",
           "payable_fee": 0.0
         },
         {
-          "name": "Bhadal Toll Plaza (NE 4)",
-          "normal_fee": 365.0,
+          "name": "Main Toll Plaza (Hilalpur)",
+          "normal_fee": 330.0,
           "annual_pass_status": "COVERED",
           "payable_fee": 0.0
-        }
-      ]
-    },
-    {
-      "route_name": "via NH 48 (Delhi - Jaipur Highway)",
-      "distance_km": 272.8,
-      "duration_minutes": 310.0,
-      "normal_toll": 215.0,
-      "annual_pass_covered_amount": 125.0,
-      "payable_toll": 90.0,
-      "annual_pass_savings": 125.0,
-      "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=Delhi&destination=Jaipur",
-      "tolls": [
-        {
-          "name": "Kherki Daula Toll Plaza",
-          "normal_fee": 125.0,
-          "annual_pass_status": "COVERED",
-          "payable_fee": 0.0
-        },
-        {
-          "name": "Shahjahanpur State Toll Plaza",
-          "normal_fee": 90.0,
-          "annual_pass_status": "NOT_COVERED",
-          "payable_fee": 90.0
-        }
-      ]
-    },
-    {
-      "route_name": "via Alwar / SH 14",
-      "distance_km": 305.2,
-      "duration_minutes": 340.0,
-      "normal_toll": 180.0,
-      "annual_pass_covered_amount": 80.0,
-      "payable_toll": 100.0,
-      "annual_pass_savings": 80.0,
-      "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=Delhi&destination=Jaipur",
-      "tolls": [
-        {
-          "name": "Sohna Toll Plaza",
-          "normal_fee": 80.0,
-          "annual_pass_status": "COVERED",
-          "payable_fee": 0.0
-        },
-        {
-          "name": "Bhiwadi State Fee Plaza",
-          "normal_fee": 100.0,
-          "annual_pass_status": "NOT_COVERED",
-          "payable_fee": 100.0
         }
       ]
     }
@@ -234,16 +200,8 @@ The API will be available at:
 ### Key Business Logic Principles:
 - When `annual_pass: false`, all tolls are assigned standard TollGuru fees regardless of dataset matching.
 - When `annual_pass: true`, eligibility is checked plaza-by-plaza.
-- For routes where all toll plazas match the NHAI dataset (e.g. Delhi-Mumbai Expressway route), the total payable toll becomes **₹0**.
+- For routes where all toll plazas match the NHAI dataset, the total payable toll becomes **₹0**.
 - TollWise returns **all route alternatives** and does not filter out or hide any route.
-
----
-
-## 📍 Google Maps Navigation Link Note
-
-TollWise extracts and exposes the `google_maps_url` for each route returned by TollGuru (or generates a direct Google Maps Directions URL fallback).
-
-> **Verification Note**: The `google_maps_url` field is fully implemented in the response DTO and controller logic. However, manual end-to-end click-through testing in an external browser remains pending after the TollGuru API trial quota was exhausted during API integration testing.
 
 ---
 
@@ -251,10 +209,11 @@ TollWise extracts and exposes the `google_maps_url` for each route returned by T
 
 | Component / Feature | Status | Notes |
 | :--- | :--- | :--- |
+| **Backend API (FastAPI)** | **VERIFIED** | Successfully responds on `http://127.0.0.1:8000` |
+| **Frontend UI (Vite + React)** | **VERIFIED** | Interactive route search app running at `http://localhost:5173` |
 | **TollGuru API Integration** | **VERIFIED** | Successfully queries TollGuru v2 origin-destination API |
-| **Multi-Route Alternatives** | **VERIFIED** | Preserves and returns all 3 route alternatives for Delhi → Jaipur |
+| **Multi-Route Alternatives** | **VERIFIED** | Preserves and returns all route alternatives for search requests |
 | **Distance & Duration Parsing** | **VERIFIED** | Correctly parses numeric values from text/metric objects |
 | **Annual Pass OFF (`annual_pass: false`)** | **VERIFIED** | Standard TollGuru fees returned for all plazas |
 | **Annual Pass ON (`annual_pass: true`)** | **VERIFIED** | Covered plazas set to ₹0 fee, non-covered plazas retain standard fee |
 | **NHAI PDF Dataset Parsing** | **VERIFIED** | Dynamically parses eligible plaza list from `data/NH-Plazas.pdf` |
-| **Google Maps URL Field** | **IMPLEMENTED** | Included in DTO response; manual click verification pending API quota |

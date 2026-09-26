@@ -160,29 +160,77 @@ The API will be available at:
   "origin": "Delhi",
   "destination": "Jaipur",
   "annual_pass_applied": true,
-  "routes_count": 1,
+  "routes_count": 3,
   "routes": [
     {
-      "route_name": "Route 1",
-      "distance_km": 285.4,
-      "duration_minutes": 292.0,
-      "normal_toll": 180.0,
-      "annual_pass_covered_amount": 100.0,
-      "payable_toll": 80.0,
-      "annual_pass_savings": 100.0,
+      "route_name": "via Delhi - Mumbai Expy / NE 4 (Fastest)",
+      "distance_km": 297.4,
+      "duration_minutes": 265.0,
+      "normal_toll": 585.0,
+      "annual_pass_covered_amount": 585.0,
+      "payable_toll": 0.0,
+      "annual_pass_savings": 585.0,
       "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=Delhi&destination=Jaipur",
       "tolls": [
         {
-          "name": "Kherki Daula Toll Plaza",
-          "normal_fee": 100.0,
+          "name": "Hilalpur Toll Plaza (Delhi-Mumbai Expy)",
+          "normal_fee": 220.0,
           "annual_pass_status": "COVERED",
           "payable_fee": 0.0
         },
         {
-          "name": "Shahjahanpur Toll Plaza",
-          "normal_fee": 80.0,
+          "name": "Bhadal Toll Plaza (NE 4)",
+          "normal_fee": 365.0,
+          "annual_pass_status": "COVERED",
+          "payable_fee": 0.0
+        }
+      ]
+    },
+    {
+      "route_name": "via NH 48 (Delhi - Jaipur Highway)",
+      "distance_km": 272.8,
+      "duration_minutes": 310.0,
+      "normal_toll": 215.0,
+      "annual_pass_covered_amount": 125.0,
+      "payable_toll": 90.0,
+      "annual_pass_savings": 125.0,
+      "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=Delhi&destination=Jaipur",
+      "tolls": [
+        {
+          "name": "Kherki Daula Toll Plaza",
+          "normal_fee": 125.0,
+          "annual_pass_status": "COVERED",
+          "payable_fee": 0.0
+        },
+        {
+          "name": "Shahjahanpur State Toll Plaza",
+          "normal_fee": 90.0,
           "annual_pass_status": "NOT_COVERED",
-          "payable_fee": 80.0
+          "payable_fee": 90.0
+        }
+      ]
+    },
+    {
+      "route_name": "via Alwar / SH 14",
+      "distance_km": 305.2,
+      "duration_minutes": 340.0,
+      "normal_toll": 180.0,
+      "annual_pass_covered_amount": 80.0,
+      "payable_toll": 100.0,
+      "annual_pass_savings": 80.0,
+      "google_maps_url": "https://www.google.com/maps/dir/?api=1&origin=Delhi&destination=Jaipur",
+      "tolls": [
+        {
+          "name": "Sohna Toll Plaza",
+          "normal_fee": 80.0,
+          "annual_pass_status": "COVERED",
+          "payable_fee": 0.0
+        },
+        {
+          "name": "Bhiwadi State Fee Plaza",
+          "normal_fee": 100.0,
+          "annual_pass_status": "NOT_COVERED",
+          "payable_fee": 100.0
         }
       ]
     }

@@ -25,7 +25,7 @@ class AnnualPassController:
         elif os.path.exists("NH-Plazas.pdf"):
             self.pdf_path = "NH-Plazas.pdf"
         else:
-            self.pdf_path = "data/nhai_annual_pass.pdf"
+            self.pdf_path = "data/NH-Plazas.pdf"
 
         self._parser = NHAIPdfParser(self.pdf_path)
         self._eligible_plazas: Set[str] = set()

@@ -23,7 +23,7 @@
 TollWise/
 ├── data/
 │   ├── README.md               # Instructions for dataset placement
-│   └── nhai_annual_pass.pdf    # Official NHAI/IHMCL Annual Pass eligible plaza PDF
+│   └── NH-Plazas.pdf           # Official NHAI/IHMCL Annual Pass eligible plaza PDF
 ├── src/
 │   ├── annual_pass/            # Feature: Annual Pass PDF loading & plaza evaluation
 │   │   ├── __init__.py
@@ -73,7 +73,7 @@ cp .env.example .env
 Edit `.env`:
 ```ini
 TOLLGURU_API_KEY=your_actual_tollguru_api_key
-NHAI_PDF_PATH=data/nhai_annual_pass.pdf
+NHAI_PDF_PATH=data/NH-Plazas.pdf
 HOST=127.0.0.1
 PORT=8000
 ```
@@ -81,7 +81,7 @@ PORT=8000
 ### 3. Add NHAI Annual Pass PDF
 Ensure your official NHAI Annual Pass PDF is placed at:
 ```bash
-data/nhai_annual_pass.pdf
+data/NH-Plazas.pdf
 ```
 
 ### 4. Install Dependencies
@@ -256,5 +256,5 @@ TollWise extracts and exposes the `google_maps_url` for each route returned by T
 | **Distance & Duration Parsing** | **VERIFIED** | Correctly parses numeric values from text/metric objects |
 | **Annual Pass OFF (`annual_pass: false`)** | **VERIFIED** | Standard TollGuru fees returned for all plazas |
 | **Annual Pass ON (`annual_pass: true`)** | **VERIFIED** | Covered plazas set to ₹0 fee, non-covered plazas retain standard fee |
-| **NHAI PDF Dataset Parsing** | **VERIFIED** | Dynamically parses eligible plaza list from `data/nhai_annual_pass.pdf` |
+| **NHAI PDF Dataset Parsing** | **VERIFIED** | Dynamically parses eligible plaza list from `data/NH-Plazas.pdf` |
 | **Google Maps URL Field** | **IMPLEMENTED** | Included in DTO response; manual click verification pending API quota |

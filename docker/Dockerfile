@@ -10,16 +10,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy requirements first for Docker layer caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies (pre-built wheels, no gcc compiler needed)
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 

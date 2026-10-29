@@ -27,7 +27,10 @@ TollWise/
 ├── frontend/                   # React + Vite Frontend Web App
 │   ├── public/                 # Static assets
 │   ├── src/                    # Components (RouteShow, Ticket, SearchBar, etc.)
+│   ├── .dockerignore           # Frontend Docker ignore rules
 │   ├── .env.example            # Frontend environment variables template
+│   ├── Dockerfile              # Frontend multi-stage build (Node → Nginx)
+│   ├── nginx.conf              # Nginx config with API reverse proxy to backend
 │   ├── package.json            # Node.js dependencies & scripts
 │   └── vite.config.ts          # Vite configuration with API proxying to backend
 ├── src/                        # FastAPI Backend Application
@@ -110,9 +113,78 @@ npm install
 
 ## 🏃 Running the Application
 
-To run the complete application, start both the backend and frontend servers:
+### Option A: Docker (Recommended)
 
-### 1. Start the Backend Server (FastAPI)
+The easiest way to run TollWise is with Docker. Both the backend API and frontend are containerized and orchestrated via Docker Compose.
+
+#### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/)
+- A `.env` file in the project root (see [Environment Configuration](#2-environment-configuration))
+- NHAI Annual Pass PDF at `data/NH-Plazas.pdf`
+
+#### Run with Docker Compose (Full Stack)
+```bash
+# Build and start both backend + frontend containers
+docker compose up --build
+
+# Or run in detached (background) mode
+docker compose up --build -d
+```
+- **Frontend App**: `http://localhost:5173`
+- **Backend API**: `http://localhost:8000`
+- **Swagger Docs**: `http://localhost:8000/docs`
+
+```bash
+# Stop the containers
+docker compose down
+```
+
+#### Run Individual Containers (Without Compose)
+
+**Backend API only:**
+```bash
+# Build the backend image
+docker build -f docker/Dockerfile -t tollwise-api .
+
+# Run the backend container
+docker run -d \
+  --name tollwise-api \
+  -p 8000:8000 \
+  --env-file .env \
+  -e HOST=0.0.0.0 \
+  -e PORT=8000 \
+  -v $(pwd)/data:/app/data \
+  --restart unless-stopped \
+  tollwise-api
+```
+
+**Frontend only:**
+```bash
+# Build the frontend image
+docker build -f frontend/Dockerfile -t tollwise-frontend ./frontend
+
+# Run the frontend container
+docker run -d \
+  --name tollwise-frontend \
+  -p 5173:80 \
+  --restart unless-stopped \
+  tollwise-frontend
+```
+
+> **Note:** When running containers individually, the frontend Nginx config proxies API requests to `http://tollwise-api:8000`. For this to work, both containers must be on the same Docker network:
+> ```bash
+> docker network create tollwise-net
+> docker run -d --name tollwise-api --network tollwise-net -p 8000:8000 --env-file .env -e HOST=0.0.0.0 -v $(pwd)/data:/app/data tollwise-api
+> docker run -d --name tollwise-frontend --network tollwise-net -p 5173:80 tollwise-frontend
+> ```
+
+---
+
+### Option B: Local Development (Without Docker)
+
+To run the complete application locally, start both the backend and frontend servers:
+
+#### 1. Start the Backend Server (FastAPI)
 ```bash
 # Activate virtual environment if not already activated
 source venv/bin/activate
@@ -123,7 +195,7 @@ uvicorn main:app --reload --host 127.0.0.1 --port 8000
 - **Base API URL**: `http://127.0.0.1:8000`
 - **Interactive Swagger Docs**: `http://127.0.0.1:8000/docs`
 
-### 2. Start the Frontend Dev Server (Vite)
+#### 2. Start the Frontend Dev Server (Vite)
 In a separate terminal window:
 ```bash
 cd frontend
